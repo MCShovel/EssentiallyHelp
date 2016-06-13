@@ -1,5 +1,6 @@
 package com.steamcraftmc.EssentiallyHelp.Commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
@@ -20,6 +21,12 @@ public class HelpCommand extends BaseCommand {
         String chapterPageStr = args.length > 1 ? args[1] : null;
         String command = cmdName;
 
+        if (pageStr != null && pageStr.equalsIgnoreCase("reload") && user.hasPermission("*")) {
+    		plugin.reloadConfig();
+    		user.sendMessage(ChatColor.GOLD + "EssentiallyHelp configuration reloaded.");
+    		return true;
+        }
+        
         HelpBuilder output;
 		if (pageStr == null || pageStr.matches("^\\d+$")) {
             output = new HelpBuilder(plugin, user, "");

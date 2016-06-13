@@ -2,6 +2,8 @@ package com.steamcraftmc.EssentiallyHelp.Utils;
 
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -29,10 +31,23 @@ public class HelpBuilder implements IText {
         final List<String> newLines = new ArrayList<String>();
         String pluginName = "";
         String pluginNameLow = "";
+
         if (!match.equalsIgnoreCase("")) {
             lines.add(helpMatching(match));
         }
-
+        else {
+	        FileConfiguration config = plugin.getConfig();
+	        ConfigurationSection cmds = config.getConfigurationSection("commands");
+	        Set<String> custom = cmds.getKeys(false);
+	        for (String k : custom) {
+	        	if (!cmds.isString(k)) continue;
+	        	String val = cmds.getString(k);
+	            newLines.add(helpLine(k, val));
+	        }
+        }
+        
+        boolean pluginsOnly = match.equalsIgnoreCase("plugins") && user.hasPermission("*");
+        
         for (Plugin p : plugin.getServer().getPluginManager().getPlugins()) {
             try {
                 final List<String> pluginLines = new ArrayList<String>();
@@ -40,15 +55,26 @@ public class HelpBuilder implements IText {
                 final Map<String, Map<String, Object>> cmds = desc.getCommands();
                 pluginName = p.getDescription().getName();
                 pluginNameLow = pluginName.toLowerCase(Locale.ENGLISH);
+            	if (pluginsOnly) {
+                    lines.add(pluginList(pluginName, pluginNameLow, desc.getVersion()));
+                    String url = desc.getWebsite(); 
+                	if (url != null && url.length() > 0) {
+                		lines.add(ChatColor.DARK_GRAY + url);
+                	}
+                    continue;
+            	}
                 if (pluginNameLow.equals(match)) {
                     lines.clear();
                     newLines.clear();
                     lines.add(helpFrom(p.getDescription().getName()));
                 }
-
+            	
                 for (Map.Entry<String, Map<String, Object>> k : cmds.entrySet()) {
                     try {
-                        if (!match.equalsIgnoreCase("") && (!pluginNameLow.contains(match)) && (!k.getKey().toLowerCase(Locale.ENGLISH).contains(match)) && (!(k.getValue().get(DESCRIPTION) instanceof String && ((String) k.getValue().get(DESCRIPTION)).toLowerCase(Locale.ENGLISH).contains(match)))) {
+                        if (!match.equalsIgnoreCase("") && (!pluginNameLow.contains(match)) && 
+                        		(!k.getKey().toLowerCase(Locale.ENGLISH).contains(match)) && 
+                        		(!(k.getValue().get(DESCRIPTION) instanceof String && 
+                				((String) k.getValue().get(DESCRIPTION)).toLowerCase(Locale.ENGLISH).contains(match)))) {
                             continue;
                         }
 
@@ -86,15 +112,16 @@ public class HelpBuilder implements IText {
                                 pluginLines.add(helpLine(k.getKey(), value.get(DESCRIPTION)));
                             }
                         }
-                    } catch (NullPointerException ex) {
+                    }
+                    catch (NullPointerException ex) {
                     }
                 }
-                if (!pluginLines.isEmpty()) {
+                if (!pluginLines.isEmpty() || isPluginDisabled(pluginName)) {
                     newLines.addAll(pluginLines);
                     if (pluginNameLow.equals(match)) {
                         break;
                     }
-                    if (match.equalsIgnoreCase("")) {
+                    if (showPlugins() && match.equalsIgnoreCase("")) {
                         lines.add(helpPlugin(pluginName, pluginNameLow));
                     }
                 }
@@ -106,6 +133,11 @@ public class HelpBuilder implements IText {
                 reported = true;
             }
         }
+        
+        if (sorted()) {
+        	Collections.sort(newLines, String.CASE_INSENSITIVE_ORDER);
+        }
+        
         lines.addAll(newLines);
     }
 
@@ -114,13 +146,20 @@ public class HelpBuilder implements IText {
     	msg = msg.replace("{name}", name);
     	return ChatColor.translateAlternateColorCodes('&', msg);
     }
+
+    public String pluginList(String name, String lname, String ver) {
+    	
+    	String msg = plugin.getConfig().getString("formatting.pluginList", "&c/help {lname}&f: {name} v{ver}");
+    	msg = msg.replace("{name}", name).replace("{lname}", lname).replace("{ver}", ver == null ? "?" : ver);
+    	return ChatColor.translateAlternateColorCodes('&', msg);
+    }
     
     public String helpPlugin(String name, String lname) {
     	String msg = plugin.getConfig().getString("formatting.helpPlugin", "&4{name}&f: Plugin Help: /help {lname}");
     	msg = msg.replace("{name}", name).replace("{lname}", lname);
     	return ChatColor.translateAlternateColorCodes('&', msg);
     }
-    
+
     public String helpFrom(String name) {
     	String msg = plugin.getConfig().getString("formatting.helpFrom", "&6Commands from {name}:");
     	msg = msg.replace("{name}", name);
@@ -132,11 +171,23 @@ public class HelpBuilder implements IText {
     	msg = msg.replace("{name}", name).replace("{desc}", String.valueOf(desc));
     	return ChatColor.translateAlternateColorCodes('&', msg);
     }
-    
-    public boolean isCommandDisabled(String name) {
-    	return plugin.getConfig().getBoolean("disabled." + name.toLowerCase(), false);
+
+    public boolean sorted() {
+    	return plugin.getConfig().getBoolean("options.sorted", false);
     }
-    
+
+    public boolean showPlugins() {
+    	return plugin.getConfig().getBoolean("options.showplugins", false);
+    }
+
+    public boolean isCommandDisabled(String name) {
+    	return plugin.getConfig().getBoolean("disabled.command." + name.toLowerCase(), false);
+    }
+
+    public boolean isPluginDisabled(String name) {
+    	return plugin.getConfig().getBoolean("disabled.plugin." + name.toLowerCase(), false);
+    }
+
     public List<String> getLines() {
         return lines;
     }

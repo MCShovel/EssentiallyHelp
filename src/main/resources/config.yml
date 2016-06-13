@@ -1,0 +1,46 @@
+# EssentiallyHelp - v1.0 Copied from Essentials
+
+#general options
+options:
+  showplugins: true
+  sorted: false
+
+#manually added commands:
+commands:
+  example: 'This is an example description'
+
+pages:
+  colors:
+    - '&e ---- &6{content} &e--&6 Minecraft Format Codes &e----'
+    - '&7[& 0] &k Obfuscated     &7[& l] - &l Bold'
+    - '&7[& 0] &m Strikethrough  &7[& n] - &n Underline'
+    - '&7[& 0] &o Italic         &7[& r] - &r Reset'
+    - ''
+    - '&e ---- &6{content} &e--&6 Minecraft Color Codes &e----'
+    - '&7[&&0] &0 Black          &7[&&1] - &1 Dark Blue'
+    - '&7[&&2] &2 Dark Green     &7[&&3] - &3 Dark Aqua'
+    - '&7[&&4] &4 Dark Red       &7[&&5] - &5 Dark Purple'
+    - '&7[&&6] &6 Gold           &7[&&7] - &7 Gray'
+    - '&7[&&8] &8 Dark Gray      &7[&&9] - &9 Blue'
+    - '&7[&&a] &a Green          &7[&&b] - &b Aqua'
+    - '&7[&&c] &c Red            &7[&&d] - &d Light Purple'
+    - '&7[&&e] &e Yellow         &7[&&f] - &f White'
+
+#disable the display of specific commands or entire plugin contents
+disabled:
+  plugin:
+    EssentiallyHelp: false
+  command:
+    help: false
+
+#formatting of help output
+formatting:
+  helpMatching: '&6Commands  matching "&c{name}&6":'
+  helpPlugin: '&4{name}&f: Plugin Help: /help {lname}'
+  helpFrom: '&6Commands from {name}:'
+  helpLine: '&6/{name}&f: {desc}'
+  readNextPage: '&6Type&c /{name} {page} &6to read the next page.'
+  infoChapterPages: '&e ---- &6{content} &e--&6 Page &c{page}&6 of &c{pages} &e----'
+  infoPages: '&e ---- &6{content} &e--&6 Page &c{page}&6 of &c{pages} &e----'
+  infoChapter: '&6Select chapter:'
+  infoUnknownChapter: '&4Unknown chapter.'
