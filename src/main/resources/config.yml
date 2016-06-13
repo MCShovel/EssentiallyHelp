@@ -12,19 +12,18 @@ options:
 info:
   help:
     permission: '*'
-    1:
-      - '&e ---- &6EssentiallyHelp - v1.0 &e----'
-      - '&rInformation available at &6http://github.com/MCShovel/EssentiallyHelp'
+    text:
+      - '&rInformation available at:'
+      - '&f[&6http://github.com/MCShovel/EssentiallyHelp&f]&r'
       - '&r'
       - 'Use &c/info reload&r after editing the info section'
       - 'or &c/help reload&r after editing the help section'
       - '&r'
       - 'Adding permission nodes will restrict who can see a'
       - 'particular section.'
-      - '&e ------------------------------------'
   colors:
-    1:
-      - '&e ---- &6/info colors &e--&6 Minecraft Color Codes &e----'
+    text:
+      - '&6 Minecraft Color Codes:'
       - '&r[& 0] &0 Black              &r[& 8] &8 Dark Gray'
       - '&r[& 1] &1 Dark Blue         &r[& 9] &9 Blue'
       - '&r[& 2] &2 Dark Green       &r[& a] &a Green'
@@ -33,21 +32,17 @@ info:
       - '&r[& 5] &5 Dark Purple      &r[& d] &d Light Purple'
       - '&r[& 6] &6 Gold                &r[& e] &e Yellow'
       - '&r[& 7] &7 Gray               &r[& f] &f White'
-      - '&e ---- &6/info colors &e--&6 Page &c1&6 of &c2 &e----'
-    2:
-      - '&e ---- &6/info colors &e--&6 Minecraft Format Codes &e----'
+      - '&6 Minecraft Format Codes:'
       - '&r[& k]  &kObfuscated&r         [& l] &l Bold'
       - '&r[& m]  &mStrikethrough&r      [& n] &n Underline'
       - '&r[& n] &o Italic                 &r[& r] &r Reset'
-      - '&e ---- &6/info colors &e--&6 Page &c2&6 of &c2 &e----'
 
-
-#disable the display of specific commands or entire plugin contents
+#true to disable the display of specific commands or entire plugin contents
 disabled:
   plugin:
-    EssentiallyHelp: false
+    essentiallyhelp: false
   command:
-    help: false
+    info: false
 
 #formatting of help output
 formatting:
@@ -60,3 +55,6 @@ formatting:
   infoPages: '&e ---- &6{content} &e--&6 Page &c{page}&6 of &c{pages} &e----'
   infoChapter: '&6Select chapter:'
   infoUnknownChapter: '&4Unknown chapter.'
+  noAccessToTopic: '&cYou do not have access to that topic.'
+  topicNotFound: '&6Topic &c{topic}&6 not found.'
+  topicList: '&6Topics&f: {topics}'

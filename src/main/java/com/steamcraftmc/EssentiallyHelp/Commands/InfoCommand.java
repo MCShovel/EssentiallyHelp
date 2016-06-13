@@ -14,10 +14,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.steamcraftmc.EssentiallyHelp.MainPlugin;
+import com.steamcraftmc.EssentiallyHelp.Utils.TextLines;
+import com.steamcraftmc.EssentiallyHelp.Utils.TextPager;
 
 public class InfoCommand extends BaseCommand {
 
-	Map<String, Map<Integer, String[]>> infoPages;
+	Map<String, List<String>> infoTopics;
 	Map<String, String> perms;
 
 	public InfoCommand(MainPlugin plugin) {
@@ -29,11 +31,11 @@ public class InfoCommand extends BaseCommand {
 	
 	boolean enabled() {
 		
-		if (infoPages != null)
-			return infoPages.size() >= 0;
+		if (infoTopics != null)
+			return infoTopics.size() >= 0;
 
         ConfigurationSection info = plugin.getConfig().getConfigurationSection("info");
-        infoPages = new HashMap<String, Map<Integer,String[]>>();
+        infoTopics = new HashMap<String, List<String>>();
         perms = new HashMap<String, String>();
 
     	plugin.log(Level.FINE, "Loading topics...");
@@ -42,39 +44,21 @@ public class InfoCommand extends BaseCommand {
 		        Set<String> custom = info.getKeys(false);
 		        if (custom != null) {
 			        for (String k : custom) {
-			        	
-			        	plugin.log(Level.FINE, "Loading topic: " + k);
-			        	List<?> l = info.getStringList(k);
-			        	String[] lines = l.toArray(new String[l.size()]);
+			        	ArrayList<String> lines = new ArrayList<String>();
+			        	List<String> inputLines = plugin.getConfig().getStringList("info." + k + ".text");
+			        	if (inputLines == null || inputLines.size() == 0) {
+			        		plugin.log(Level.SEVERE, "Configuration error, missing node 'info." + k + ".text'!");
+			        		continue;
+			        	}
+			        	for (String line : inputLines) {
+			        		lines.add(ChatColor.translateAlternateColorCodes('&', line).replace("& ", "&"));
+			        	}
+			        	infoTopics.put(k.toLowerCase(), lines);
 
-			        	Map<Integer,String[]> pgs;
-			        	if (infoPages.containsKey(k)) {
-			        		pgs = infoPages.get(k.toLowerCase());
-			        	}
-			        	else {
-			        		infoPages.put(k.toLowerCase(), pgs = new HashMap<Integer, String[]>());
-			        	}
-			        	
 			        	String needsPerm = plugin.getConfig().getString("info." + k + ".permission");
 			        	if (needsPerm != null && !needsPerm.equalsIgnoreCase("")) {
 			        		perms.put(k.toLowerCase(), needsPerm);
 				        	plugin.log(Level.FINE, "Permission for " + k + " added: " + needsPerm);
-			        	}
-			        	
-			        	if (lines.length == 0) {
-				        	plugin.log(Level.FINE, "Loading topic: " + k);
-			        		for (int ix = 1; ix < 100; ix++) {
-			        			l = plugin.getConfig().getStringList("info." + k + "." + String.valueOf(ix));
-					        	lines = l.toArray(new String[l.size()]);
-					        	if (lines.length > 0) {
-					        		pgs.put(ix, lines);
-					        	}
-					        	else {
-					        		break;
-					        	}
-			        		}
-			        	} else {
-			        		pgs.put(1, lines);
 			        	}
 			        }
 		        }
@@ -85,13 +69,13 @@ public class InfoCommand extends BaseCommand {
         }
 
     	this.plugin.getCommand(this.cmdName).setPermission(
-    			infoPages.size() == 0
+    			infoTopics.size() == 0
     				? "essentials.info.undefined"
     				: "essentials.info"
     			);
         
-    	plugin.log(Level.INFO, "Loaded topics: " + String.valueOf(infoPages.size()));
-		return infoPages.size() >= 0;
+    	plugin.log(Level.INFO, "Loaded topics: " + String.valueOf(infoTopics.size()));
+		return infoTopics.size() >= 0;
 	}	
 	
 	@Override
@@ -102,30 +86,27 @@ public class InfoCommand extends BaseCommand {
         }
 		String topic = (args.length > 0 ? args[0] : "").toLowerCase();
 		String pgText = args.length > 1 ? args[1] : "";
-		int pgNum = 1;
 		
 		if (topic.matches("^\\d+$")) {
 			pgText = topic;
 			topic = "";
 		}
-		if (pgText.length() > 0 && pgText.matches("^\\d+$")) {
-			pgNum = Integer.parseInt(pgText);
-		}
 		
         if (topic.equalsIgnoreCase("reload") && user.hasPermission("*")) {
     		plugin.reloadConfig();
-    		infoPages = null;
+    		infoTopics = null;
+    		perms = null;
     		user.sendMessage(ChatColor.GOLD + "EssentiallyHelp configuration reloaded.");
     		return true;
         }
         
         if (perms.containsKey(topic) && !user.hasPermission(perms.get(topic))) {
-        	user.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou do not have access to that topic."));
+        	user.sendMessage(noAccessToTopic());
         	return true;
         }
         
         if (topic.equalsIgnoreCase("")) {
-        	List<String> topics = new ArrayList<String>(infoPages.keySet());
+        	List<String> topics = new ArrayList<String>(infoTopics.keySet());
         	Collections.sort(topics, String.CASE_INSENSITIVE_ORDER);
         	for (int i = topics.size()-1; i >= 0; i--) {
                 if (perms.containsKey(topics.get(i)) && !user.hasPermission(perms.get(topics.get(i)))) {
@@ -133,23 +114,39 @@ public class InfoCommand extends BaseCommand {
                 }
         	}
         	
-        	user.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Topics&f: " + String.join(",  ", topics)));
+        	user.sendMessage(topicList(String.join(", ", topics)));
         }
-        else if (infoPages.containsKey(topic.toLowerCase())) {
-        	Map<Integer, String[]> pages = infoPages.get(topic);
-        	if (pages.containsKey(pgNum)) {
-        		String[] lines = pages.get(pgNum);
-            	user.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n", lines)).replace("& ", "&"));
-        	}
-        	else {
-            	user.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Topic &c" + topic + "&6 page &c" + pgNum + "&6 not found."));
-        	}
+        else if (infoTopics.containsKey(topic.toLowerCase())) {
+        	List<String> lines = infoTopics.get(topic);
+
+        	boolean onepage = pgText.equals("*");
+            final TextPager pager = new TextPager(plugin, new TextLines(lines), onepage);
+            pager.showPage(onepage ? "" : pgText, topic, "info " + topic, user);
+            return true;
         }
         else {
-        	user.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Topic &c" + topic + "&6 not found."));
+        	user.sendMessage(topicNotFound(topic));
         }
 
         return true;
 	}
+
+    public String noAccessToTopic() {
+    	String msg = plugin.getConfig().getString("formatting.noAccessToTopic", "&cYou do not have access to that topic.");
+    	return ChatColor.translateAlternateColorCodes('&', msg);
+    }
+
+    public String topicNotFound(String topic) {
+    	String msg = plugin.getConfig().getString("formatting.topicNotFound", "&6Topic &c{topic}&6 not found.");
+    	msg = msg.replace("{topic}", topic);
+    	return ChatColor.translateAlternateColorCodes('&', msg);
+    }
+
+    public String topicList(String topics) {
+    	String msg = plugin.getConfig().getString("formatting.topicList", "&6Topics&f: {topics}");
+    	msg = msg.replace("{topics}", topics);
+    	return ChatColor.translateAlternateColorCodes('&', msg);
+    }
+
 
 }
