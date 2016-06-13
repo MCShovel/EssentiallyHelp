@@ -32,21 +32,25 @@ public class HelpBuilder implements IText {
         String pluginName = "";
         String pluginNameLow = "";
 
+        boolean pluginsOnly = match.equalsIgnoreCase("plugins") && user.hasPermission("*");
+        
         if (!match.equalsIgnoreCase("")) {
             lines.add(helpMatching(match));
         }
-        else {
+        else if (!pluginsOnly) {
 	        FileConfiguration config = plugin.getConfig();
 	        ConfigurationSection cmds = config.getConfigurationSection("commands");
-	        Set<String> custom = cmds.getKeys(false);
-	        for (String k : custom) {
-	        	if (!cmds.isString(k)) continue;
-	        	String val = cmds.getString(k);
-	            newLines.add(helpLine(k, val));
+	        if (cmds != null) {
+		        Set<String> custom = cmds.getKeys(false);
+		        if (custom != null) {
+			        for (String k : custom) {
+			        	if (!cmds.isString(k)) continue;
+			        	String val = cmds.getString(k);
+			            newLines.add(helpLine(k, val));
+			        }
+		        }
 	        }
         }
-        
-        boolean pluginsOnly = match.equalsIgnoreCase("plugins") && user.hasPermission("*");
         
         for (Plugin p : plugin.getServer().getPluginManager().getPlugins()) {
             try {
