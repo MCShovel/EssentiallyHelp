@@ -29,6 +29,7 @@ public class HelpBuilder implements IText {
     	this.plugin = plugin;
         boolean reported = false;
         final List<String> newLines = new ArrayList<String>();
+        final HashSet<String> known = new HashSet<>();
         String pluginName = "";
         String pluginNameLow = "";
 
@@ -85,6 +86,10 @@ public class HelpBuilder implements IText {
                 				((String) k.getValue().get(DESCRIPTION)).toLowerCase(Locale.ENGLISH).contains(match)))) {
                             continue;
                         }
+                        if (known.contains(k.getKey())) {
+                        	continue;
+                        }
+                        known.add(k.getKey());
 
                         if (pluginNameLow.contains("essentials")) {
                             final String node = "essentials." + k.getKey();
