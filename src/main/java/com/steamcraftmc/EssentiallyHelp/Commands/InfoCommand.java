@@ -16,8 +16,9 @@ import org.bukkit.entity.Player;
 import com.steamcraftmc.EssentiallyHelp.MainPlugin;
 
 public class InfoCommand extends BaseCommand {
-	
+
 	Map<String, Map<Integer, String[]>> infoPages;
+	Map<String, String> perms;
 
 	public InfoCommand(MainPlugin plugin) {
 		super(plugin, 
@@ -33,6 +34,7 @@ public class InfoCommand extends BaseCommand {
 
         ConfigurationSection info = plugin.getConfig().getConfigurationSection("info");
         infoPages = new HashMap<String, Map<Integer,String[]>>();
+        perms = new HashMap<String, String>();
 
     	plugin.log(Level.FINE, "Loading topics...");
         try {
@@ -47,16 +49,21 @@ public class InfoCommand extends BaseCommand {
 
 			        	Map<Integer,String[]> pgs;
 			        	if (infoPages.containsKey(k)) {
-			        		pgs = infoPages.get(k);
+			        		pgs = infoPages.get(k.toLowerCase());
 			        	}
 			        	else {
-			        		infoPages.put(k, pgs = new HashMap<Integer, String[]>());
+			        		infoPages.put(k.toLowerCase(), pgs = new HashMap<Integer, String[]>());
+			        	}
+			        	
+			        	String needsPerm = plugin.getConfig().getString("info." + k + ".permission");
+			        	if (needsPerm != null && !needsPerm.equalsIgnoreCase("")) {
+			        		perms.put(k.toLowerCase(), needsPerm);
+				        	plugin.log(Level.FINE, "Permission for " + k + " added: " + needsPerm);
 			        	}
 			        	
 			        	if (lines.length == 0) {
-				        	plugin.log(Level.FINE, "Loading topic: " + k + " as multi-page");
+				        	plugin.log(Level.FINE, "Loading topic: " + k);
 			        		for (int ix = 1; ix < 100; ix++) {
-					        	plugin.log(Level.FINE, "Loading topic: " + "info." + k + "." + String.valueOf(ix));
 			        			l = plugin.getConfig().getStringList("info." + k + "." + String.valueOf(ix));
 					        	lines = l.toArray(new String[l.size()]);
 					        	if (lines.length > 0) {
@@ -93,7 +100,7 @@ public class InfoCommand extends BaseCommand {
         if (!enabled()) {
         	return false;
         }
-		String topic = args.length > 0 ? args[0] : "";
+		String topic = (args.length > 0 ? args[0] : "").toLowerCase();
 		String pgText = args.length > 1 ? args[1] : "";
 		int pgNum = 1;
 		
@@ -112,9 +119,19 @@ public class InfoCommand extends BaseCommand {
     		return true;
         }
         
+        if (perms.containsKey(topic) && !user.hasPermission(perms.get(topic))) {
+        	user.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou do not have access to that topic."));
+        	return true;
+        }
+        
         if (topic.equalsIgnoreCase("")) {
         	List<String> topics = new ArrayList<String>(infoPages.keySet());
         	Collections.sort(topics, String.CASE_INSENSITIVE_ORDER);
+        	for (int i = topics.size()-1; i >= 0; i--) {
+                if (perms.containsKey(topics.get(i)) && !user.hasPermission(perms.get(topics.get(i)))) {
+            		topics.remove(i);
+                }
+        	}
         	
         	user.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Topics&f: " + String.join(",  ", topics)));
         }

@@ -11,8 +11,17 @@ options:
 
 info:
   help:
-    - '&e ---- &6EssentiallyHelp - v1.0 &e----'
-    - '&rInformation available at &6http://github.com/MCShovel/EssentiallyHelp'
+    permission: '*'
+    1:
+      - '&e ---- &6EssentiallyHelp - v1.0 &e----'
+      - '&rInformation available at &6http://github.com/MCShovel/EssentiallyHelp'
+      - '&r'
+      - 'Use &c/info reload&r after editing the info section'
+      - 'or &c/help reload&r after editing the help section'
+      - '&r'
+      - 'Adding permission nodes will restrict who can see a'
+      - 'particular section.'
+      - '&e ------------------------------------'
   colors:
     1:
       - '&e ---- &6/info colors &e--&6 Minecraft Color Codes &e----'
