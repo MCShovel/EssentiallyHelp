@@ -6,8 +6,8 @@ options:
   sorted: false
 
 #manually added commands:
-commands:
-  example: 'This is an example description'
+#commands:
+#  example: 'This is an example description'
 
 pages:
   colors:

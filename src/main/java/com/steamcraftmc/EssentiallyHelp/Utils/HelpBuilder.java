@@ -55,6 +55,10 @@ public class HelpBuilder implements IText {
                 final Map<String, Map<String, Object>> cmds = desc.getCommands();
                 pluginName = p.getDescription().getName();
                 pluginNameLow = pluginName.toLowerCase(Locale.ENGLISH);
+                
+                if (isPluginDisabled(pluginNameLow)) {
+                	continue;
+                }
             	if (pluginsOnly) {
                     lines.add(pluginList(pluginName, pluginNameLow, desc.getVersion()));
                     String url = desc.getWebsite(); 
@@ -116,7 +120,7 @@ public class HelpBuilder implements IText {
                     catch (NullPointerException ex) {
                     }
                 }
-                if (!pluginLines.isEmpty() || isPluginDisabled(pluginName)) {
+                if (!pluginLines.isEmpty()) {
                     newLines.addAll(pluginLines);
                     if (pluginNameLow.equals(match)) {
                         break;
