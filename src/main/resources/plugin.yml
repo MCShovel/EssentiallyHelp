@@ -1,0 +1,13 @@
+name: EssentiallyHelp
+main: com.steamcraftmc.EssentiallyHelp.MainPlugin
+version: '1.0'
+author: rknapp
+load: startup
+commands:
+  help:
+    description: Get help for the commands you have available.
+    usage: /help [topic/filter] [page number]
+    permission: essentials.help
+    permission-message: You don't have access to this command.
+    default: true
+
