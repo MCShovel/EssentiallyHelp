@@ -36,6 +36,7 @@ public class MainPlugin extends JavaPlugin {
             log(Level.INFO, "Configuration file config.yml created!");
         }
 
+		new com.steamcraftmc.EssentiallyHelp.Commands.InfoCommand(this);
 		new com.steamcraftmc.EssentiallyHelp.Commands.HelpCommand(this);
 		_logger.log(Level.CONFIG, "Plugin listening for events.");
     }

@@ -35,10 +35,6 @@ public abstract class BaseCommand implements CommandExecutor {
     }
     
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-
-        if (!enabled()) {
-        	return false;
-        }
         
         if (cmd == null || !cmdName.equalsIgnoreCase(cmd.getName()) || 
         	args == null || args.length < minArgs || args.length > maxArgs) {
@@ -67,8 +63,4 @@ public abstract class BaseCommand implements CommandExecutor {
 			return true;
 		}
     }
-
-	protected boolean enabled() {
-		return true;
-	}
 }
