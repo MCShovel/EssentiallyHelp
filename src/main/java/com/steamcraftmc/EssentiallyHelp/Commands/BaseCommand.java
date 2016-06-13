@@ -24,8 +24,7 @@ public abstract class BaseCommand implements CommandExecutor {
         this.cmdName = command;
         this.minArgs = minArg;
         this.maxArgs = maxArg;
-
-        this.plugin.getCommand(this.cmdName).setExecutor(this);
+    	this.plugin.getCommand(this.cmdName).setExecutor(this);
     }
     
     protected abstract boolean doPlayerCommand(Player player, Command cmd, String[] args) throws Exception;
@@ -36,9 +35,13 @@ public abstract class BaseCommand implements CommandExecutor {
     }
     
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-    	
+
+        if (!enabled()) {
+        	return false;
+        }
+        
         if (cmd == null || !cmdName.equalsIgnoreCase(cmd.getName()) || 
-        		args == null || args.length < minArgs || args.length > maxArgs) {
+        	args == null || args.length < minArgs || args.length > maxArgs) {
             return false;
         }
 
@@ -64,4 +67,8 @@ public abstract class BaseCommand implements CommandExecutor {
 			return true;
 		}
     }
+
+	protected boolean enabled() {
+		return true;
+	}
 }

@@ -9,13 +9,8 @@ options:
 #commands:
 #  example: 'This is an example description'
 
-pages:
-  colors:
-    - '&e ---- &6{content} &e--&6 Minecraft Format Codes &e----'
-    - '&7[& 0] &k Obfuscated     &7[& l] - &l Bold'
-    - '&7[& 0] &m Strikethrough  &7[& n] - &n Underline'
-    - '&7[& 0] &o Italic         &7[& r] - &r Reset'
-    - ''
+info:
+  colors.1:
     - '&e ---- &6{content} &e--&6 Minecraft Color Codes &e----'
     - '&7[&&0] &0 Black          &7[&&1] - &1 Dark Blue'
     - '&7[&&2] &2 Dark Green     &7[&&3] - &3 Dark Aqua'
@@ -25,6 +20,14 @@ pages:
     - '&7[&&a] &a Green          &7[&&b] - &b Aqua'
     - '&7[&&c] &c Red            &7[&&d] - &d Light Purple'
     - '&7[&&e] &e Yellow         &7[&&f] - &f White'
+    - '&e ---- &6/info colors &e--&6 Page &c1&6 of &c2 &e----'
+  colors.2:
+    - '&e ---- &6{content} &e--&6 Minecraft Format Codes &e----'
+    - '&7[& 0] &k Obfuscated     &7[& l] - &l Bold'
+    - '&7[& 0] &m Strikethrough  &7[& n] - &n Underline'
+    - '&7[& 0] &o Italic         &7[& r] - &r Reset'
+    - '&e ---- &6/info colors &e--&6 Page &c2&6 of &c2 &e----'
+
 
 #disable the display of specific commands or entire plugin contents
 disabled:
