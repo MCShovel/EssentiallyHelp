@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -77,9 +78,18 @@ public class InfoCommand extends BaseCommand {
     	plugin.log(Level.INFO, "Loaded topics: " + String.valueOf(infoTopics.size()));
 		return infoTopics.size() >= 0;
 	}	
-	
+
 	@Override
 	protected boolean doPlayerCommand(Player user, Command cmd, String[] args) throws Exception {
+		return doCommand(user, cmd, args);
+	}
+
+	@Override
+	protected boolean doConsoleCommand(CommandSender user, Command cmd, String[] args) throws Exception {
+		return doCommand(user, cmd, args);
+	}
+	
+	protected boolean doCommand(CommandSender user, Command cmd, String[] args) throws Exception {
 
         if (!enabled()) {
         	return false;

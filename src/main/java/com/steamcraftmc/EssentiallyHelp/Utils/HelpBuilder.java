@@ -2,9 +2,9 @@ package com.steamcraftmc.EssentiallyHelp.Utils;
 
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 
@@ -25,7 +25,7 @@ public class HelpBuilder implements IText {
     private final transient Map<String, Integer> bookmarks = new HashMap<String, Integer>();
 
     @SuppressWarnings("unchecked")
-	public HelpBuilder(MainPlugin plugin, final Player user, final String match) throws IOException {
+	public HelpBuilder(MainPlugin plugin, final CommandSender user, final String match) throws IOException {
     	this.plugin = plugin;
         boolean reported = false;
         final List<String> newLines = new ArrayList<String>();

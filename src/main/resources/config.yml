@@ -5,6 +5,18 @@ options:
   showplugins: true
   sorted: false
 
+messages:
+# Display local-server join message
+  join: true
+# Display local-server quit message
+  quit: true
+# Message to send to user on first-join
+  welcome:
+    - '&6Welcome &c{PLAYER}&6!'
+    - '&6Use &c/info&6 for guides and other information'
+    - '&6Use &c/help&6 for help using commands'
+    - '&6Players online:&c {ONLINE} &6- World time:&c {WORLDTIME12}&r'
+
 #manually added commands:
 #commands:
 #  example: 'This is an example description'

@@ -8,9 +8,11 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
  
 public class MainPlugin extends JavaPlugin {
+	private PluginEventListener _listener;
 	public final   Logger  _logger;
 	public Boolean _exLogging;
 
@@ -38,6 +40,8 @@ public class MainPlugin extends JavaPlugin {
 
 		new com.steamcraftmc.EssentiallyHelp.Commands.InfoCommand(this);
 		new com.steamcraftmc.EssentiallyHelp.Commands.HelpCommand(this);
+
+        getServer().getPluginManager().registerEvents(_listener = new PluginEventListener(this), this);
 		_logger.log(Level.CONFIG, "Plugin listening for events.");
     }
 
@@ -58,5 +62,6 @@ public class MainPlugin extends JavaPlugin {
     
     @Override
     public void onDisable() {
+    	HandlerList.unregisterAll(_listener);
     }
 }

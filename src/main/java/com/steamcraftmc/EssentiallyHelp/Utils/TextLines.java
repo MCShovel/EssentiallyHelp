@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class TextLines implements IText {
 
 	private final transient List<String> lines;
@@ -12,7 +14,7 @@ public class TextLines implements IText {
     private final transient Map<String, Integer> bookmarks = new HashMap<String, Integer>();
 
 	public TextLines(List<String> lines) {
-		this.lines = lines;
+		this.lines = new ArrayList<String>(lines);
 	}
 	
 	@Override
@@ -28,6 +30,13 @@ public class TextLines implements IText {
 	@Override
 	public Map<String, Integer> getBookmarks() {
 		return bookmarks;
+	}
+
+	public IText applyColor() {
+		for (int ix=0; ix < lines.size(); ix++) {
+			lines.set(ix, ChatColor.translateAlternateColorCodes('&', lines.get(ix)));
+		}
+		return this;
 	}
 
 }

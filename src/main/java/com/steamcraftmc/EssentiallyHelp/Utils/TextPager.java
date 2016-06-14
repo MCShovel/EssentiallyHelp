@@ -5,6 +5,7 @@ import java.util.*;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.steamcraftmc.EssentiallyHelp.MainPlugin;
 
@@ -138,6 +139,11 @@ public class TextPager {
             sender.sendMessage(readNextPage(commandName, pageStr + " " + (page + 1)));
         }
     }
+
+	public void showDirect(Player player) {
+        List<String> lines = this.text.getLines();
+        player.sendMessage(String.join("\n", lines.toArray(new String[lines.size()])));
+	}
 
 	private Object capitalCase(String string) {
 		return string;
