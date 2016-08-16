@@ -91,6 +91,10 @@ public class HelpBuilder implements IText {
                         }
                         known.add(k.getKey());
 
+                        if (plugin.getConfig().getBoolean("disabled.command." + k.getKey(), false)) {
+                        	continue;
+                        }
+
                         if (pluginNameLow.contains("essentials")) {
                             final String node = "essentials." + k.getKey();
                             if (!isCommandDisabled(k.getKey()) && user.hasPermission(node)) {
